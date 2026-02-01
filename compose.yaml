@@ -1,0 +1,30 @@
+services:
+  postgres:
+    container_name: postgres
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=mydatabase'
+      - 'POSTGRES_PASSWORD=secret'
+      - 'POSTGRES_USER=myuser'
+    ports:
+      - 5432:5432
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5431:80"
+    depends_on:
+      - postgres
+
+#  redis:
+#    image: redis:7.0
+#    container_name: redis
+#    ports:
+#      - "6379:6379"
+#    restart: unless-stopped

@@ -1,0 +1,28 @@
+spring:
+  profiles:
+    active: dev
+
+  application:
+    name: chat-service
+
+chat:
+  messages:
+    max-per-session: 5000
+    max-size-bytes: 1048576  # 1 MB
+  sessions:
+    soft-delete: true
+
+security:
+  trusted-gateway: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+       application: chat-service
