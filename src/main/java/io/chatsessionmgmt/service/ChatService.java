@@ -1,9 +1,11 @@
 package io.chatsessionmgmt.service;
 
 import io.chatsessionmgmt.dtos.ChatMessageDTO;
+import io.chatsessionmgmt.dtos.ChatSessionDTO;
 import io.chatsessionmgmt.dtos.MessageRequest;
 import io.chatsessionmgmt.entity.ChatMessage;
 import io.chatsessionmgmt.entity.ChatSession;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.domain.Page;
 
 import java.time.Instant;
@@ -12,13 +14,13 @@ import java.util.UUID;
 
 public interface ChatService {
 
-    List<ChatSession> getChatSessions(int limit);
+    List<ChatSessionDTO> getChatSessions(int limit);
 
-    ChatSession createSession(String name);
+    ChatSessionDTO createSession(String name);
 
-    ChatSession renameSession(UUID sessionId, String newName);
+    ChatSessionDTO renameSession(UUID sessionId, String newName);
 
-    ChatSession markFavorite(UUID sessionId, boolean favorite);
+    ChatSessionDTO markFavorite(UUID sessionId, boolean favorite);
 
     void deleteSession(UUID sessionId);
 

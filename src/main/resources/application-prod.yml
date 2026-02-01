@@ -1,8 +1,8 @@
 spring:
   datasource:
-    url: jdbc:postgresql://${DB_HOST:192.168.0.142}:${DB_PORT:5432}/${DB_NAME:mydatabase}
-    username: ${DB_USERNAME:myuser}
-    password: ${DB_PASSWORD:secret}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     open-in-view: false
@@ -21,7 +21,11 @@ spring:
   data:
     redis:
       repositories:
-        enabled: false
+        enabled:
+  security:
+    user:
+      name: admin
+      password: admin
 logging:
   level:
     root: INFO

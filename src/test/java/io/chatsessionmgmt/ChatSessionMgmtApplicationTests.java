@@ -6,6 +6,7 @@ import io.chatsessionmgmt.entity.ChatSession;
 import io.chatsessionmgmt.repository.ChatMessageRepository;
 import io.chatsessionmgmt.repository.ChatSessionRepository;
 import io.chatsessionmgmt.service.ChatService;
+import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,12 +33,15 @@ class ChatSessionMgmtApplicationTests {
 
     private UUID sessionId;
 
+    private final Dotenv dotenv = Dotenv.load();
+
     @BeforeEach
     void setUp() {
         ChatSession session = new ChatSession();
         session.setId(UUID.randomUUID());
         session.setCreatedAt(Instant.now());
         session.setUpdatedAt(Instant.now());
+        session.setUserId(dotenv.get("API_KEY_USER1"));
         session.setName("UnitTest Session");
         chatSessionRepository.save(session);
         sessionId = session.getId();

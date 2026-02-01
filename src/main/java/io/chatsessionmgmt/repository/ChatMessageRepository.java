@@ -16,11 +16,13 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     @Query("""
         select c from ChatMessage c
         where c.chatSession.id = :sessionId
+        and c.chatSession.userId = :userId
         and c.timestamp > :afterTimestamp
         order by c.timestamp asc
     """)
     List<ChatMessage> findMessagesAfter(
             @Param("sessionId") UUID sessionId,
+            @Param("userId") String userId,
             @Param("afterTimestamp") Instant afterTimestamp,
             Pageable pageable
     );
@@ -29,12 +31,14 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, UUID> 
     @Query("""
         select c from ChatMessage c
         where c.chatSession.id = :sessionId
+        and c.chatSession.userId = :userId
         and c.timestamp < :beforeTimestamp
         order by c.timestamp desc
     """)
     List<ChatMessage> findMessagesBefore(
             @Param("sessionId") UUID sessionId,
             @Param("beforeTimestamp") Instant beforeTimestamp,
+            @Param("userId") String userId,
             Pageable pageable
     );
 }

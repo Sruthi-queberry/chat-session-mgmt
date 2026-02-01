@@ -1,6 +1,8 @@
 package io.chatsessionmgmt.config;
 
 import io.chatsessionmgmt.exception.RateLimitExceededException;
+import io.chatsessionmgmt.exception.UnauthorizedException;
+import io.chatsessionmgmt.service.ApiKeyService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.UUID;
 
 @Slf4j
@@ -17,15 +20,12 @@ import java.util.UUID;
 public class RequestFilter extends OncePerRequestFilter {
 
     private static final String API_KEY_HEADER = "X-API-KEY";
-    private final String apiKey;
     private final RedisRateLimiter rateLimiter;
+    private final ApiKeyService apiKeyService;
 
-    public RequestFilter(RedisRateLimiter rateLimiter) {
-//        this.apiKey = System.getenv("API_KEY");  // to test with .env from docker
-        this.apiKey = "testKey";
-        if (this.apiKey == null) {
-            throw new IllegalStateException("API_KEY environment variable not set!");
-        }
+
+    public RequestFilter(RedisRateLimiter rateLimiter, ApiKeyService apiKeyService) {
+        this.apiKeyService = apiKeyService;
         this.rateLimiter = rateLimiter;
     }
 
@@ -45,17 +45,17 @@ public class RequestFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String requestApiKey = request.getHeader(API_KEY_HEADER);
+
+        String userId = apiKeyService.resolveUser(requestApiKey);
+
+        if (userId == null) {
+            throw new UnauthorizedException("Invalid API key");
+        }
+
         long startTime = System.currentTimeMillis();
         String requestId = UUID.randomUUID().toString();
 
         log.info("Request id {} method: {} URI: {} remote address: {}",requestId ,request.getMethod(), request.getRequestURI(), request.getRemoteAddr());
-
-        if (requestApiKey == null || !requestApiKey.equals(apiKey)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write("Unauthorized: Invalid API Key");
-            log.info("Unauthorized: Invalid API Key");
-            return;
-        }
 
         if (!rateLimiter.allowRequest(requestApiKey)) {
             log.warn("Too many requests - Rate limit exceeded");
@@ -64,8 +64,12 @@ public class RequestFilter extends OncePerRequestFilter {
             );
         }
 
-        filterChain.doFilter(request, response);
-
+        UserContext.set(userId);
+        try {
+            filterChain.doFilter(request, response);
+        }finally {
+            UserContext.clear();
+        }
         long duration = System.currentTimeMillis() - startTime;
         log.info("Response id {} status: {} {} ({} ms)", requestId, response.getStatus(), response.getContentType(), duration);
     }

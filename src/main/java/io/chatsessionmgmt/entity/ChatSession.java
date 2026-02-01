@@ -10,7 +10,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "chat_session")
+@Table(
+        name = "chat_session",
+        indexes = {
+                @Index(name = "idx_session_user", columnList = "user_id")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,6 +26,9 @@ public class ChatSession {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+
+    @Column(nullable = false)
+    private String userId;
 
     private String name;
 

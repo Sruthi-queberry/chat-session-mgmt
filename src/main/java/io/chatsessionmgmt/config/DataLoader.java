@@ -5,6 +5,7 @@ import io.chatsessionmgmt.entity.ChatMessage;
 import io.chatsessionmgmt.entity.ChatSession;
 import io.chatsessionmgmt.repository.ChatSessionRepository;
 import io.chatsessionmgmt.repository.ChatMessageRepository;
+import io.github.cdimascio.dotenv.Dotenv;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -20,6 +21,7 @@ public class DataLoader implements CommandLineRunner {
 
     private final ChatSessionRepository chatSessionRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final Dotenv dotenv = Dotenv.load();
 
     public DataLoader(ChatSessionRepository sessionRepo, ChatMessageRepository messageRepo) {
         this.chatSessionRepository = sessionRepo;
@@ -33,6 +35,7 @@ public class DataLoader implements CommandLineRunner {
             ChatSession session = new ChatSession();
             session.setId(UUID.randomUUID());
             session.setCreatedAt(Instant.now());
+            session.setUserId(dotenv.get("API_KEY_USER1"));
             session.setUpdatedAt(Instant.now());
             session.setName("Test Session");
             chatSessionRepository.save(session);

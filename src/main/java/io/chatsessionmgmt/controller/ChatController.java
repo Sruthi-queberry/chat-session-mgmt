@@ -1,6 +1,7 @@
 package io.chatsessionmgmt.controller;
 
 import io.chatsessionmgmt.dtos.ChatMessageDTO;
+import io.chatsessionmgmt.dtos.ChatSessionDTO;
 import io.chatsessionmgmt.dtos.MessageRequest;
 import io.chatsessionmgmt.entity.ChatMessage;
 import io.chatsessionmgmt.entity.ChatSession;
@@ -21,23 +22,23 @@ public class ChatController {
 
     private final ChatService chatService;
 
-    @GetMapping("/sessions")
-    public ResponseEntity<List<ChatSession>> getChatMessages(@RequestParam(defaultValue = "10") int limit){
+    @GetMapping("/session")
+    public ResponseEntity<List<ChatSessionDTO>> getChatMessages(@RequestParam(defaultValue = "10") int limit){
         return ResponseEntity.ok(chatService.getChatSessions(limit));
     }
 
     @PostMapping("/session")
-    public ResponseEntity<ChatSession> createSession(@RequestParam String name) {
+    public ResponseEntity<ChatSessionDTO> createSession(@RequestParam String name) {
         return ResponseEntity.ok(chatService.createSession(name));
     }
 
     @PutMapping("/session/{id}/rename")
-    public ResponseEntity<ChatSession> renameSession(@PathVariable UUID id, @RequestParam String name) {
+    public ResponseEntity<ChatSessionDTO> renameSession(@PathVariable UUID id, @RequestParam String name) {
         return ResponseEntity.ok(chatService.renameSession(id, name));
     }
 
     @PutMapping("/session/{id}/favorite")
-    public ResponseEntity<ChatSession> markFavorite(@PathVariable UUID id, @RequestParam boolean favorite) {
+    public ResponseEntity<ChatSessionDTO> markFavorite(@PathVariable UUID id, @RequestParam boolean favorite) {
         return ResponseEntity.ok(chatService.markFavorite(id, favorite));
     }
 
