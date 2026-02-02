@@ -8,10 +8,12 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -49,7 +51,17 @@ public class RequestFilter extends OncePerRequestFilter {
         String userId = apiKeyService.resolveUser(requestApiKey);
 
         if (userId == null) {
-            throw new UnauthorizedException("Invalid API key");
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+            response.setContentType("application/json");
+
+            response.getWriter().write("""
+                {
+                  "timestamp": "%s",
+                  "status": 401,
+                  "message": "Invalid API key"
+                }
+                """.formatted(Instant.now()));
+            return;
         }
 
         long startTime = System.currentTimeMillis();
