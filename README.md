@@ -69,10 +69,6 @@ This will start:
 * Redis on port `6379`
 * Chat microservice on port `8081`
 
-### Access Swagger UI
-
-http://localhost:8081/swagger-ui/index.html
-
 ## Environment Variables
 
 Create a `.env` file in the project root
